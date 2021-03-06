@@ -5,7 +5,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import de.raik.directconnecthistory.config.GlobalAddonConfig;
 import net.labymod.api.LabyModAddon;
+import net.labymod.settings.elements.ControlElement;
+import net.labymod.settings.elements.NumberElement;
 import net.labymod.settings.elements.SettingsElement;
+import net.labymod.utils.Material;
 import net.minecraft.client.Minecraft;
 
 import java.util.ArrayList;
@@ -48,7 +51,7 @@ public class DirectConnectHistoryAddon extends LabyModAddon {
         String newDirectConnect = Minecraft.getInstance().gameSettings.lastServer;
         if (!this.getConfig().has("lastServer")) {
             this.getConfig().addProperty("lastServer", newDirectConnect);
-            this.saveConfig();
+            this.globalConfig.save();
             return;
         }
         String lastDirectConnect = this.getConfig().get("lastServer").getAsString();
@@ -73,16 +76,18 @@ public class DirectConnectHistoryAddon extends LabyModAddon {
         this.getConfig().add("servers", servers);
         this.getConfig().addProperty("lastServer", lastServer);
 
-        this.saveConfig();
-    }
-
-    @Override
-    protected void fillSettings(List<SettingsElement> list) {
-
-    }
-
-    @Override
-    public void saveConfig() {
         this.globalConfig.save();
+    }
+
+    @Override
+    protected void fillSettings(List<SettingsElement> subSettings) {
+        subSettings.add(new NumberElement("Length of history", new ControlElement.IconData(Material.BOOK)
+                , this.historyLength)
+                .setMinValue(1)
+                .addCallback(setValue -> {
+                    this.historyLength = setValue;
+                    this.getConfig().addProperty("amount", setValue);
+                    this.globalConfig.save();
+                }));
     }
 }
