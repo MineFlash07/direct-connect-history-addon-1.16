@@ -18,7 +18,7 @@ public class GlobalAddonConfig {
 
     public GlobalAddonConfig(LabyModAddon addon) {
         this.addon = addon;
-        this.configFile = new File("LabyMod/" + CONFIG_DIRECTORY, addon.about.name + ".json");
+        this.configFile = new File("LabyMod/" + CONFIG_DIRECTORY, "Direct Connect History.json");
 
         File directory = this.configFile.getParentFile();
         if (!directory.exists()) {
@@ -34,7 +34,6 @@ public class GlobalAddonConfig {
         } catch (IOException | JsonParseException | ClassCastException exception) {
             this.internalConfig = new JsonObject();
         }
-        this.save();
     }
 
     public void compare() {

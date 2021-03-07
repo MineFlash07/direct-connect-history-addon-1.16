@@ -14,6 +14,7 @@ import net.labymod.settings.elements.NumberElement;
 import net.labymod.settings.elements.SettingsElement;
 import net.labymod.utils.Material;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screen.ServerListScreen;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +57,7 @@ public class DirectConnectHistoryAddon extends LabyModAddon {
 
     @Subscribe
     public void onGuiOpen(ScreenOpenEvent event) {
-        if (!(event.getScreen() instanceof ModGuiScreenServerList)) {
+        if (!(event.getScreen() instanceof ModGuiScreenServerList) && !(event.getScreen() instanceof ServerListScreen)) {
             return;
         }
         event.setScreen(new HistoryServerListScreen((ModGuiMultiplayer) LabyMod.getInstance().getGuiOpenListener().getGuiMultiplayer(), this));
