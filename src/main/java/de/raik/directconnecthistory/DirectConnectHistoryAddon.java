@@ -3,8 +3,12 @@ package de.raik.directconnecthistory;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import de.raik.directconnecthistory.config.GlobalAddonConfig;
 import net.labymod.api.LabyModAddon;
+import net.labymod.api.event.Subscribe;
+import net.labymod.api.event.events.client.gui.screen.ScreenOpenEvent;
+import net.labymod.gui.ModGuiMultiplayer;
+import net.labymod.gui.ModGuiScreenServerList;
+import net.labymod.main.LabyMod;
 import net.labymod.settings.elements.ControlElement;
 import net.labymod.settings.elements.NumberElement;
 import net.labymod.settings.elements.SettingsElement;
@@ -25,6 +29,8 @@ public class DirectConnectHistoryAddon extends LabyModAddon {
     @Override
     public void onEnable() {
         this.globalConfig = new GlobalAddonConfig(this);
+
+        this.api.getEventService().registerListener(this);
     }
 
     @Override
@@ -45,6 +51,15 @@ public class DirectConnectHistoryAddon extends LabyModAddon {
         }
 
         this.checkDirectConnect();
+        this.trimHistory();
+    }
+
+    @Subscribe
+    public void onGuiOpen(ScreenOpenEvent event) {
+        if (!(event.getScreen() instanceof ModGuiScreenServerList)) {
+            return;
+        }
+        event.setScreen(new HistoryServerListScreen((ModGuiMultiplayer) LabyMod.getInstance().getGuiOpenListener().getGuiMultiplayer(), this));
     }
 
     private void checkDirectConnect() {
@@ -58,6 +73,12 @@ public class DirectConnectHistoryAddon extends LabyModAddon {
         this.addServer(lastDirectConnect, newDirectConnect);
     }
 
+    private void trimHistory() {
+        while (this.history.size() > this.historyLength) {
+            this.history.remove(this.history.size() - 1);
+        }
+    }
+
     public void addServer(String lastServer, String newIp) {
         if (newIp.equals(lastServer)) {
             return;
@@ -67,9 +88,7 @@ public class DirectConnectHistoryAddon extends LabyModAddon {
             this.history.remove(lastServer);
             this.history.add(0, lastServer);
         }
-        while (this.history.size() > this.historyLength) {
-            this.history.remove(this.history.size() - 1);
-        }
+        this.trimHistory();
 
         JsonArray servers = new JsonArray();
         this.history.forEach(servers::add);
@@ -89,5 +108,9 @@ public class DirectConnectHistoryAddon extends LabyModAddon {
                     this.getConfig().addProperty("amount", setValue);
                     this.globalConfig.save();
                 }));
+    }
+
+    public String[] getHistoryAsArray() {
+        return this.history.toArray(new String[this.history.size()]);
     }
 }

@@ -1,4 +1,4 @@
-package de.raik.directconnecthistory.config;
+package de.raik.directconnecthistory;
 
 import com.google.gson.*;
 import net.labymod.api.LabyModAddon;
