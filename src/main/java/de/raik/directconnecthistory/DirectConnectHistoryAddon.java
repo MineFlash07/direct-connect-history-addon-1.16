@@ -94,7 +94,7 @@ public class DirectConnectHistoryAddon extends LabyModAddon {
         JsonArray servers = new JsonArray();
         this.history.forEach(servers::add);
         this.getConfig().add("servers", servers);
-        this.getConfig().addProperty("lastServer", lastServer);
+        this.getConfig().addProperty("lastServer", newIp);
 
         this.globalConfig.save();
     }
